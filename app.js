@@ -11,6 +11,7 @@ const outputfile = path.join(OUTPUTDIR, "index.html");
 const teamArr = [];
 
 function employeeQuestions() {
+  // initialhtml();
   inquirer
     .prompt([
       {
@@ -69,12 +70,13 @@ function managerA(managerQ) {
         managerQ.answerRole,
         managerQ.answerOfficeNumber
       );
-      // console.log(newManager);
+      console.log(newManager);
       teamArr.push(newManager);
       if (answers.answerAddTeamMember === true) {
         employeeQuestions();
       } else {
-        buildTemplate();
+        initialhtml();
+        renderhtml(teamArr);
       }
     });
 }
@@ -102,11 +104,13 @@ function engineer(engineerQ) {
         engineerQ.answerRole,
         engineerQ.answerGithub
       );
+      console.log(newEngineer);
       teamArr.push(newEngineer);
       if (answers.answerAddTeamMember === true) {
         employeeQuestions();
       } else {
-        buildTemplate();
+        initialhtml();
+        renderhtml(teamArr);
       }
     });
 }
@@ -133,11 +137,13 @@ function intern(internQ) {
         internQ.answerRole,
         internQ.answerSchool
       );
+      console.log(newIntern);
       teamArr.push(newIntern);
       if (answers.answerAddTeamMember === true) {
         employeeQuestions();
       } else {
-        renderhtml();
+        initialhtml();
+        renderhtml(teamArr);
         // console.log(rendered);
       }
     });
@@ -154,7 +160,7 @@ function initialhtml() {
       <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
       <link rel="stylesheet" href="./style.css">
-      <title>Document</title>
+      <title>My Team</title>
   </head>
   
   <body>
@@ -177,6 +183,8 @@ function initialhtml() {
 }
 
 function renderhtml(answers) {
+  console.log(teamArr);
+  console.log(answers.getName());
   return new Promise((resolve, reject) => {
     const name = answers.getName();
     const role = answers.getRole();
@@ -229,7 +237,7 @@ function renderhtml(answers) {
     });
   });
 }
-initialhtml();
+// initialhtml();
 employeeQuestions();
 // function buildTemplate() {
 //   console.log(teamArr);
