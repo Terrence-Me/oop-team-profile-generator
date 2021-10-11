@@ -1,0 +1,19 @@
+.header {
+  padding: 3vh;
+  /* font-size: 100px; */
+}
+
+.header_name {
+  font-size: 100px;
+  color: azure;
+}
+
+.height {
+  line-height: 200%;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: azure;
+}
+.list_pad {
+  padding: 10% 5%;
+}
