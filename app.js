@@ -242,7 +242,7 @@ function renderhtml(data) {
 employeeQuestions();
 function buildTemplate() {
   console.log(teamArr);
-  fs.writeFileSync(outputfile, render(teamArr), "utf8");
+  fs.writeFileSync(outputfile, render(template), "utf8");
 }
 
 // buildTemplate(() => {
