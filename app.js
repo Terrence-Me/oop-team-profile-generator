@@ -37,13 +37,13 @@ function employeeQuestions() {
       },
     ])
     .then((data) => {
-      let answers = data;
-      if (answers.answerRole === "Manager") {
-        managerA(answers);
-      } else if (answers.answerRole === "Engineer") {
-        engineer(answers);
+      answers = data;
+      if (data.answerRole === "Manager") {
+        managerA(data);
+      } else if (data.answerRole === "Engineer") {
+        engineer(data);
       } else {
-        intern(answers);
+        intern(data);
       }
     });
 }
@@ -184,7 +184,7 @@ function renderhtml(data) {
   initialhtml();
   // console.log(teamArr);
   // console.log(answers.getName());
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
     const name = data.getName();
     const role = data.getRole();
     const id = data.getId();
@@ -227,23 +227,21 @@ function renderhtml(data) {
       </div>
   </div>`;
     }
-    console.log(template);
-    console.log(teamArr);
-    // fs.appendFile(outputfile, template, (err, resoleved) => {
-    //   if (err) {
-    //     return reject(err);
-    //   }
-    //   return resoleved;
-    // });
+    console.log("success");
+    fs.appendFile(outputfile, template, (err, resoleved) => {
+      if (err) {
+        return reject(err);
+      }
+      return resoleved;
+    });
   });
 }
-
 // initialhtml();
 employeeQuestions();
-function buildTemplate() {
-  console.log(teamArr);
-  fs.writeFileSync(outputfile, render(template), "utf8");
-}
+// function buildTemplate() {
+//   console.log(teamArr);
+//   fs.writeFileSync(outputfile, render(teamArr), "utf8");
+// }
 
 // buildTemplate(() => {
 //   fs.writeFileSync(outputPath, render(teeamArr), "utf8");
