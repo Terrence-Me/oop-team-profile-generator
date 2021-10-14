@@ -9,9 +9,9 @@ const render = require("./lib/render_html");
 const OUTPUTDIR = path.resolve(__dirname, "public");
 const outputfile = path.join(OUTPUTDIR, "index.html");
 const teamArr = [];
+let newMember = "";
 
 function employeeQuestions() {
-  // initialhtml();
   inquirer
     .prompt([
       {
@@ -37,17 +37,18 @@ function employeeQuestions() {
       },
     ])
     .then((data) => {
-      if (data.answerRole === "Manager") {
-        managerA(data);
-      } else if (data.answerRole === "Engineer") {
-        engineer(data);
+      let answers = data;
+      if (answers.answerRole === "Manager") {
+        managerA(answers);
+      } else if (answers.answerRole === "Engineer") {
+        engineer(answers);
       } else {
-        intern(data);
+        intern(answers);
       }
     });
 }
 
-function managerA(managerQ) {
+function managerA(addRole) {
   inquirer
     .prompt([
       {
@@ -62,26 +63,25 @@ function managerA(managerQ) {
         name: "answerAddTeamMember",
       },
     ])
-    .then((answers) => {
-      const newManager = new Manager(
-        managerQ.answerName,
-        managerQ.answerID,
-        managerQ.answerEmail,
-        managerQ.answerRole,
-        managerQ.answerOfficeNumber
+    .then((data) => {
+      newMember = new Manager(
+        addRole.answerName,
+        addRole.answerID,
+        addRole.answerEmail,
+        addRole.answerRole,
+        addRole.answerOfficeNumber
       );
-      console.log(newManager);
-      teamArr.push(newManager);
-      if (answers.answerAddTeamMember === true) {
+      console.log(newMember);
+      teamArr.push(newMember);
+      if (data.answerAddTeamMember === true) {
         employeeQuestions();
       } else {
-        initialhtml();
-        renderhtml(teamArr);
+        renderhtml(newMember);
       }
     });
 }
 
-function engineer(engineerQ) {
+function engineer(addRole) {
   inquirer
     .prompt([
       {
@@ -96,25 +96,24 @@ function engineer(engineerQ) {
         name: "answerAddTeamMember",
       },
     ])
-    .then((answers) => {
-      const newEngineer = new Engineer(
-        engineerQ.answerName,
-        engineerQ.answerID,
-        engineerQ.answerEmail,
-        engineerQ.answerRole,
-        engineerQ.answerGithub
+    .then((data) => {
+      newMember = new Engineer(
+        addRole.answerName,
+        addRole.answerID,
+        addRole.answerEmail,
+        addRole.answerRole,
+        addRole.answerGithub
       );
-      console.log(newEngineer);
-      teamArr.push(newEngineer);
-      if (answers.answerAddTeamMember === true) {
+      console.log(newMember);
+      teamArr.push(newMember);
+      if (data.answerAddTeamMember === true) {
         employeeQuestions();
       } else {
-        initialhtml();
-        renderhtml(teamArr);
+        renderhtml(newMember);
       }
     });
 }
-function intern(internQ) {
+function intern(addRole) {
   inquirer
     .prompt([
       {
@@ -129,21 +128,20 @@ function intern(internQ) {
         name: "answerAddTeamMember",
       },
     ])
-    .then((answers) => {
-      const newIntern = new Intern(
-        internQ.answerName,
-        internQ.answerID,
-        internQ.answerEmail,
-        internQ.answerRole,
-        internQ.answerSchool
+    .then((data) => {
+      newMember = new Intern(
+        addRole.answerName,
+        addRole.answerID,
+        addRole.answerEmail,
+        addRole.answerRole,
+        addRole.answerSchool
       );
-      console.log(newIntern);
-      teamArr.push(newIntern);
-      if (answers.answerAddTeamMember === true) {
+      console.log(newMember);
+      teamArr.push(newMember);
+      if (data.answerAddTeamMember === true) {
         employeeQuestions();
       } else {
-        initialhtml();
-        renderhtml(teamArr);
+        renderhtml(newMember);
         // console.log(rendered);
       }
     });
@@ -182,17 +180,18 @@ function initialhtml() {
   });
 }
 
-function renderhtml(answers) {
-  console.log(teamArr);
-  console.log(answers.getName());
-  return new Promise((resolve, reject) => {
-    const name = answers.getName();
-    const role = answers.getRole();
-    const id = answers.getId();
-    const email = answers.getEmail();
+function renderhtml(data) {
+  initialhtml();
+  // console.log(teamArr);
+  // console.log(answers.getName());
+  return new Promise(function (resolve, reject) {
+    const name = data.getName();
+    const role = data.getRole();
+    const id = data.getId();
+    const email = data.getEmail();
     let template = "";
     if (role === "Engineer") {
-      const username = answers.getGithub();
+      const username = data.getGithub();
       template = ` <div class="col-4">
       <div class="card">
           <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
@@ -204,8 +203,8 @@ function renderhtml(answers) {
       </div>
   </div>`;
     } else if (role === "Intern") {
-      const school = answers.getSchool();
-      template = `<div class="col-4">
+      const school = data.getSchool();
+      template += `<div class="col-4">
       <div class="card">
           <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
           <ul class="list-group list-group-flush list_pad">
@@ -216,8 +215,8 @@ function renderhtml(answers) {
       </div>
   </div>`;
     } else {
-      const officePhone = answers.getofficeNumber();
-      template = `<div class="col-4">
+      const officePhone = data.getOfficeNumber();
+      template += `<div class="col-4">
       <div class="card">
           <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
           <ul class="list-group list-group-flush list_pad">
@@ -228,21 +227,23 @@ function renderhtml(answers) {
       </div>
   </div>`;
     }
-    console.log("success");
-    fs.appendFile(outputfile, template, (err, resoleved) => {
-      if (err) {
-        return reject(err);
-      }
-      return resoleved;
-    });
+    console.log(template);
+    console.log(teamArr);
+    // fs.appendFile(outputfile, template, (err, resoleved) => {
+    //   if (err) {
+    //     return reject(err);
+    //   }
+    //   return resoleved;
+    // });
   });
 }
+
 // initialhtml();
 employeeQuestions();
-// function buildTemplate() {
-//   console.log(teamArr);
-//   fs.writeFileSync(outputfile, render(teamArr), "utf8");
-// }
+function buildTemplate() {
+  console.log(teamArr);
+  fs.writeFileSync(outputfile, render(teamArr), "utf8");
+}
 
 // buildTemplate(() => {
 //   fs.writeFileSync(outputPath, render(teeamArr), "utf8");
