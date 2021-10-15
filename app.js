@@ -1,7 +1,7 @@
 const inquirer = require("inquirer");
 const fs = require("fs");
 const path = require("path");
-const Employee = require("./lib/Employee");
+
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const Manager = require("./lib/Manager");
@@ -165,7 +165,7 @@ function initialhtml() {
       <header class="constainer-fluid bg-info mb-5 text-center header">
           <div class="row">
               <div class="col-12 jumbotron">
-                  <h1 class="header_name">MyTeam</h1>
+                  <h1 class="header_name">My Team</h1>
               </div>
           </div>
       </header>
@@ -180,55 +180,67 @@ function initialhtml() {
   });
 }
 
-function renderhtml(data) {
+function buildTeam(data) {
+  const name = data.getName();
+  const role = data.getRole();
+  const id = data.getId();
+  const email = data.getEmail();
+  let template = "";
+  if (role === "Engineer") {
+    const username = data.getGithub();
+    template = ` <div class="col-4">
+    <div class="card">
+        <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
+        <ul class="list-group list-group-flush list_pad">
+            <li class="list-group-item">ID: ${id}</li>
+            <li class="list-group-item">Email Address:<a href="mailto:${email}"> ${email}</a></li>
+            <li class="list-group-item">GitHub Username: ${username}</li>
+        </ul>
+    </div>
+</div>`;
+  } else if (role === "Intern") {
+    const school = data.getSchool();
+    template += `<div class="col-4">
+    <div class="card">
+        <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
+        <ul class="list-group list-group-flush list_pad">
+            <li class="list-group-item">ID: ${id}</li>
+            <li class="list-group-item">Email Address:<a href="mailto:${email}"> ${email}</a></li>
+            <li class="list-group-item">School: ${school}</li>
+        </ul>
+    </div>
+</div>`;
+  } else {
+    const officePhone = data.getOfficeNumber();
+    template += `<div class="col-4">
+    <div class="card">
+        <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
+        <ul class="list-group list-group-flush list_pad">
+            <li class="list-group-item">ID:${id}</li>
+            <li class="list-group-item">Email Address:<a href="mailto:${email}"> ${email}</a></li>
+            <li class="list-group-item">Office Phone: ${officePhone}</li>
+        </ul>
+    </div>
+</div>`;
+  }
+  return template;
+}
+
+function renderhtml() {
   initialhtml();
-  // console.log(teamArr);
-  // console.log(answers.getName());
+  const html = `</div>
+    </main>
+</body>`;
+  let template = teamArr.map((employee) => buildTeam(employee));
   return new Promise((resolve, reject) => {
-    const name = data.getName();
-    const role = data.getRole();
-    const id = data.getId();
-    const email = data.getEmail();
-    let template = "";
-    if (role === "Engineer") {
-      const username = data.getGithub();
-      template = ` <div class="col-4">
-      <div class="card">
-          <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
-          <ul class="list-group list-group-flush list_pad">
-              <li class="list-group-item">ID: ${id}</li>
-              <li class="list-group-item">Email Address: ${email}</li>
-              <li class="list-group-item">GitHub Username: ${username}</li>
-          </ul>
-      </div>
-  </div>`;
-    } else if (role === "Intern") {
-      const school = data.getSchool();
-      template += `<div class="col-4">
-      <div class="card">
-          <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
-          <ul class="list-group list-group-flush list_pad">
-              <li class="list-group-item">ID: ${id}</li>
-              <li class="list-group-item">Email Address: ${email}</li>
-              <li class="list-group-item">School: ${school}</li>
-          </ul>
-      </div>
-  </div>`;
-    } else {
-      const officePhone = data.getOfficeNumber();
-      template += `<div class="col-4">
-      <div class="card">
-          <h5 class="card-header height bg-primary">${name}<br />${role}</h5>
-          <ul class="list-group list-group-flush list_pad">
-              <li class="list-group-item">ID:${id}</li>
-              <li class="list-group-item">Email Address: ${email}</li>
-              <li class="list-group-item">Office Phone: ${officePhone}</li>
-          </ul>
-      </div>
-  </div>`;
-    }
     console.log("success");
-    fs.appendFile(outputfile, template, (err, resoleved) => {
+    fs.appendFile(outputfile, template.join(""), (err, resoleved) => {
+      if (err) {
+        return reject(err);
+      }
+      return resoleved;
+    });
+    fs.appendFile(outputfile, html, (err, resoleved) => {
       if (err) {
         return reject(err);
       }
@@ -236,13 +248,5 @@ function renderhtml(data) {
     });
   });
 }
-// initialhtml();
-employeeQuestions();
-// function buildTemplate() {
-//   console.log(teamArr);
-//   fs.writeFileSync(outputfile, render(teamArr), "utf8");
-// }
 
-// buildTemplate(() => {
-//   fs.writeFileSync(outputPath, render(teeamArr), "utf8");
-// });
+employeeQuestions();
